@@ -7,7 +7,7 @@ from umqtt.simple import MQTTClient
 import network
 import sys
     
-session = 'kimia/esp32/helloworld/'
+session = '...'
 BROKER = 'broker.hivemq.com'
 
 # Set pins A0 and A2 for DAC and ADC respectively
