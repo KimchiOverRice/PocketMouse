@@ -2,10 +2,11 @@ from umqtt1 import MQTTClient
 import network
 import sys
 import time
+from keys import IOkey 
 
 adafruitIoUrl = 'io.adafruit.com'
 adafruitUsername = 'kimia' # CHANGE THIS WITH YOUR OWN!
-adafruitAioKey = '...' # CHANGE THIS WITH YOUR OWN!
+adafruitAioKey = IOkey # CHANGE THIS WITH YOUR OWN!
 feedName = "kimia/feeds/mouse" # CHANGE THIS WITH YOUR OWN! (also known as "MQTT by key")
     
 '''Function with everything needed to publish a message
