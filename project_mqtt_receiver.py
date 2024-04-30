@@ -47,8 +47,8 @@ def joystick(f):
             print('Do not move')
         else:
             #speed = 400/max(abs(32500-x), abs(32500-y))
-            x = -(x - 35000)/500
-            y = -(y - 35000)/500
+            x = -(x - 35000)/400
+            y = -(y - 35000)/400
             print(str(x)+'' + str(y))
                 
                 
@@ -62,7 +62,7 @@ def ultrasonic(f):
     
 
 # mqtt callbacks
-def data(c, u, message):
+def coordinates(c, u, message):
     # extract data from MQTT message
     msg = message.payload.decode('ascii')
     # convert to vector of floats
@@ -74,13 +74,23 @@ def data(c, u, message):
     else:
         ultrasonic()
         
+def click(c, u, message):
+    msg = message.payload.decode('ascii')
+    if msg == 'right':
+        p.click(button='right')
+    if msg == 'left':
+        p.click(button='left')
+    
 
 
 # subscribe to topics
-data_topic = "{}/coord".format(session, qos)
-mqtt.subscribe(data_topic)
-mqtt.message_callback_add(data_topic, data)
+coord_topic = "{}/coord".format(session)
+mqtt.subscribe(coord_topic)
+mqtt.message_callback_add(coord_topic, coordinates)
 
+button_topic = "{}/button".format(session)
+mqtt.subscribe(button_topic)
+mqtt.message_callback_add(button_topic, click)
 
 # wait for MQTT messages
 # this function never returns
