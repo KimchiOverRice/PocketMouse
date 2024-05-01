@@ -1,5 +1,6 @@
 import paho.mqtt.client as paho
 import matplotlib.pyplot as plt
+import math
 
 import pyautogui as p
 from pynput import keyboard
@@ -27,7 +28,7 @@ verification is complete.
 session = sess
 BROKER = "broker.hivemq.com"
 qos = 0
-p.FAILSAFE = False
+
 # connect to MQTT broker
 print("Connecting to MQTT broker", BROKER, "...", end="")
 mqtt = paho.Client(paho.CallbackAPIVersion.VERSION2)
@@ -43,12 +44,12 @@ def joystick(f):
     # max value from joystick is 65535
     # max X-coord is 1920, max Y-coord is 1080
     if on:
-        if x > 35000 and x < 39000 and y > 35000 and y < 39000:
+        if x > 37000 and x < 41000 and y > 24000 and y < 30000:
             print('Do not move')
         else:
             #speed = 400/max(abs(32500-x), abs(32500-y))
-            x = -(x - 35000)/400
-            y = -(y - 35000)/400
+            x = -(x - 32000)/400
+            y = -(y - 38000)/400
             print(str(x)+'' + str(y))
                 
                 
@@ -59,6 +60,37 @@ def joystick(f):
    
 def ultrasonic(f):
     print('ultrasonic')
+    axis= f[0]
+    val = f[1]
+    
+    # get current position
+    pyx, pyy = p.position()
+    #print(pyx, pyy)
+    #print(type(pyx))
+    # convert to vector of floats
+
+    if axis == 'x':
+        x = float(val)
+        y = pyy
+        if x > 110:
+            x = pyx
+        print("x", x)
+    if axis == 'y':
+        y = float(val)
+        if y > 110:
+            y = pyy
+        x = pyx
+        print("y", y)
+    # append to data vectors, add more as needed
+  
+    # Map to pixels on screen
+    # max value from joystick is 65535
+    # max X-coord is 1920, max Y-coord is 1080
+
+    x = (math.ceil(x)/55) * 1920
+    y = (math.ceil(y)/55) * 1080
+   
+    p.moveTo(x, y, duration = 1)
     
 
 # mqtt callbacks
@@ -67,12 +99,12 @@ def coordinates(c, u, message):
     msg = message.payload.decode('ascii')
     # convert to vector of floats
     f = [ x for x in msg.split(',') ]
-    print("received", f)
+    #print("received", f)
     # append to data vectors, add more as needed
     if len(f) == 3:
         joystick(f)
     else:
-        ultrasonic()
+        ultrasonic(f)
         
 def click(c, u, message):
     msg = message.payload.decode('ascii')
